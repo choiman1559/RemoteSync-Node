@@ -1,0 +1,25 @@
+{
+  "name": "remotesync_desktop",
+  "productName" : "SyncProtocol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "LGPL-2.1",
+  "devDependencies": {
+    "electron-prebuilt": "^1.4.13"
+  },
+  "dependencies": {
+    "battery": "^1.0.1",
+    "electron": "^19.0.9",
+    "firebase": "^9.9.0",
+    "node-machine-id": "^1.1.12",
+    "open": "^8.4.0",
+    "syncprotocol": "file:syncprotocol_lib"
+  }
+}
