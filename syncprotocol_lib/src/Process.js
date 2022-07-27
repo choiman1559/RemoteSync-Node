@@ -1,6 +1,6 @@
 const propertiesReader = require('properties-reader');
 const Device = require("./Device");
-const {responseDeviceInfoToFinder, onReceiveDeviceInfo, checkPairResultAndRegister} = require("./ProcessUtil");
+const {responseDeviceInfoToFinder, onReceiveDeviceInfo, checkPairResultAndRegister, removePairedDevice} = require("./ProcessUtil");
 const {decode} = require("./AESCrypto");
 const {pairListener} = require("./index");
 
@@ -61,6 +61,12 @@ function processReception(data) {
                                 checkPairResultAndRegister(data, device)
                             }
                         }
+                    }
+                    break;
+
+                case "pair|request_remove":
+                    if(isTargetDevice(data) && isPairedDevice(device) && global.globalOption.allowRemovePairRemotely) {
+                        removePairedDevice(device)
                     }
                     break;
 

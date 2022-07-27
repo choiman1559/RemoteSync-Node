@@ -1,6 +1,6 @@
 {
   "name": "remotesync_desktop",
-  "productName" : "SyncProtocol",
+  "productName": "SyncProtocol",
   "version": "1.0.0",
   "description": "",
   "main": "./src/main.js",
@@ -19,6 +19,7 @@
     "electron": "^19.0.9",
     "firebase": "^9.9.0",
     "node-machine-id": "^1.1.12",
+    "node-notifier": "^10.0.1",
     "open": "^8.4.0",
     "syncprotocol": "file:syncprotocol_lib"
   }

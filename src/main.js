@@ -15,8 +15,9 @@ let iconPath = path.join(__dirname, 'icon.png')
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 440,
+        height: 670,
+        maximizable: false,
         icon: iconPath,
         webPreferences: {
             nodeIntegration: true,
@@ -63,6 +64,9 @@ function createWindow() {
 
     mainWindow.on('show', function () {
     })
+
+    mainWindow.setMenuBarVisibility(false)
+    mainWindow.webContents.openDevTools()
 }
 
 app.on('before-quit', function () {

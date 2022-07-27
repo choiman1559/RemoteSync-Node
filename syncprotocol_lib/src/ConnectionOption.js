@@ -14,6 +14,7 @@ class ConnectionOption extends Object {
     serverKey
     propertiesLocation
     receiveFindRequest
+    allowRemovePairRemotely
 }
 
 module.exports = ConnectionOption

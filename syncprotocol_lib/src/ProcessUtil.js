@@ -91,8 +91,6 @@ function responsePairAcceptation(device, accept) {
 }
 
 function checkPairResultAndRegister(map, device) {
-    pairListener.emit("onDevicePairResult", map)
-
     if(map.pair_accept) {
         let isNotRegistered = true;
         let dataToSave = device.deviceName + "|" + device.deviceId
@@ -119,6 +117,32 @@ function checkPairResultAndRegister(map, device) {
             pairingProcessList.splice(index, 1)
         }
     }
+
+    pairListener.emit("onDevicePairResult", map)
+}
+
+function removePairedDevice(device) {
+    const reader = propertiesReader(global.globalOption.propertiesLocation);
+    let newData = JSON.parse(reader.get("paired_list"))
+
+    newData.splice(newData.indexOf(device.toString()), 1)
+    reader.set("paired_list", JSON.stringify(newData))
+    reader.save(global.globalOption.propertiesLocation)
+    global.actionListener.onDeviceRemoved(device)
+}
+
+
+function requestRemovePair(device) {
+    let data = {
+        "type" : "pair|response_device_list",
+        "device_name" : global.globalOption.deviceName,
+        "device_id" : global.globalOption.identifierValue,
+        "send_device_name" : device.deviceName,
+        "send_device_id" : device.deviceId
+    }
+
+    if(global.globalOption.printDebugLog) console.log("sync sent", "request remove: " + JSON.stringify(data))
+    postRestApi(data)
 }
 
 function sendFindTaskNotification() {
@@ -205,6 +229,8 @@ module.exports = {
     responsePairAcceptation,
     checkPairResultAndRegister,
     onReceiveDeviceInfo,
+    removePairedDevice,
+    requestRemovePair,
 
     //methods for actual use
     sendFindTaskNotification,
