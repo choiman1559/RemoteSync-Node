@@ -15,7 +15,12 @@ let iconPath = path.join(__dirname, 'icon.png')
 
 function createWindow() {
     mainWindow = new BrowserWindow({
+        minWidth: 440,
+        maxWidth: 440,
         width: 440,
+
+        minHeight: 670,
+        maxHeight: 670,
         height: 670,
         maximizable: false,
         icon: iconPath,
@@ -44,7 +49,7 @@ function createWindow() {
             }
         },
         {
-            label: 'Quit', click: function () {
+            label: 'Quit SyncProtocol', click: function () {
                 app.isQuiting = true
                 app.quit()
             }
@@ -53,20 +58,18 @@ function createWindow() {
 
     appIcon.setContextMenu(contextMenu)
 
-    mainWindow.on('close', function () {
-        mainWindow = null
-    })
-
-    mainWindow.on('minimize', function (event) {
+    mainWindow.on('close', function (event) {
         event.preventDefault()
         mainWindow.hide()
+    })
+
+    mainWindow.on('minimize', function () {
     })
 
     mainWindow.on('show', function () {
     })
 
     mainWindow.setMenuBarVisibility(false)
-    mainWindow.webContents.openDevTools()
 }
 
 app.on('before-quit', function () {
@@ -80,9 +83,24 @@ app.on('window-all-closed', function () {
     }
 })
 
-app.on('ready', createWindow)
 app.on('activate', function () {
     if (mainWindow === null) {
         createWindow()
     }
 })
+
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+    app.quit()
+} else {
+    app.on('second-instance', () => {
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore()
+            mainWindow.focus()
+        }
+    })
+
+    app.on('ready', () => {
+        createWindow()
+    })
+}

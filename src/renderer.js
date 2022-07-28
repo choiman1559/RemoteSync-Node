@@ -1,4 +1,4 @@
-const {init} = require("./protocol");
+const {init, dataSetChangeListener} = require("./protocol");
 const propertiesReader = require("properties-reader");
 const Device = require("syncprotocol/src/Device");
 const {requestAction} = require("syncprotocol/src/ProcessUtil");
@@ -16,17 +16,27 @@ const Args2EditText = getElement("Args2")
 
 const SubmitButton = getElement("submitButton")
 
+let reader = propertiesReader(global.globalOption.propertiesLocation);
 SubmitButton.disabled = true
-
-const reader = propertiesReader(global.globalOption.propertiesLocation);
-const value = JSON.parse(reader.get("paired_list"))
 const deviceList = []
 
-for (let i = 0; i < value.length; i++) {
-    const arr = value[i].split("|")
-    deviceList.push(new Device(arr[0], arr[1]))
-    deviceSelect.add(new Option(arr[0]))
+function loadDeviceList() {
+    reader = propertiesReader(global.globalOption.propertiesLocation);
+    while(deviceList.length) deviceList.pop()
+    deviceSelect.innerHTML = '<option value="0">Select Device</option>'
+
+    const value = JSON.parse(reader.get("paired_list"))
+    for (let i = 0; i < value.length; i++) {
+        const arr = value[i].split("|")
+        deviceList.push(new Device(arr[0], arr[1]))
+        deviceSelect.add(new Option(arr[0]))
+    }
 }
+
+loadDeviceList()
+dataSetChangeListener.on("changed", function() {
+    loadDeviceList()
+})
 
 function onTaskSelected() {
     SubmitButton.disabled = (taskSelect.value === "0" || deviceSelect.value === "0")

@@ -6,20 +6,61 @@
   "main": "./src/main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "electron-builder build",
+    "deployWin": "electron-builder --win --x64 --ia32"
   },
   "keywords": [],
-  "author": "",
+  "author": "Choiman1559 <cuj1559@gmail.com>",
   "license": "LGPL-2.1",
   "devDependencies": {
-    "electron-prebuilt": "^1.4.13"
+    "electron-prebuilt": "^1.4.13",
+    "electron": "^19.0.9",
+    "electron-builder": "^23.1.0"
   },
   "dependencies": {
     "battery": "^1.0.1",
-    "electron": "^19.0.9",
     "node-machine-id": "^1.1.12",
     "node-notifier": "^10.0.1",
     "open": "^8.4.0",
     "syncprotocol": "file:syncprotocol_lib"
+  },
+  "build": {
+    "productName": "SyncProtocol",
+    "appId": "com.sync.main",
+    "asar": true,
+    "protocols": {
+      "name": "syncProtocol",
+      "schemes": [
+        "syncProtocol"
+      ]
+    },
+    "win": {
+      "target": [
+        "zip",
+        "nsis"
+      ],
+      "icon": "./src/icon.png"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "buildResources": "./resources/installer/",
+      "output": "./out/",
+      "app": "."
+    }
   }
 }

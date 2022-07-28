@@ -10,6 +10,7 @@ const Device = require("syncprotocol/src/Device");
 const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
 const {pairListener} = require("syncprotocol");
+const EventEmitter = require("events");
 const clipboard = require('electron').clipboard;
 
 const option = new ConnectionOption()
@@ -27,6 +28,9 @@ option.pairingKey = "test100"
 option.identifierValue = machineIdSync(true)
 option.deviceName = require("os").hostname()
 option.propertiesLocation = __dirname + '/config/paired_devices.properties'
+
+class dataSetChange extends EventEmitter {}
+const dataSetChangeListener = new dataSetChange()
 
 class Actions extends PairAction {
     async onActionRequested(map) {
@@ -129,7 +133,7 @@ class Actions extends PairAction {
     }
 
     onDeviceRemoved(device) {
-
+        dataSetChangeListener.emit("changed")
     }
 }
 
@@ -138,7 +142,9 @@ pairListener.on("onDeviceFound", function (device) {
 })
 
 pairListener.on("onDevicePairResult", function (data) {
-    //Nothing to do yet
+    if(data.pair_accept) {
+        dataSetChangeListener.emit("changed")
+    }
 })
 
 pairListener.on("onDataReceived", function (data) {
@@ -156,5 +162,5 @@ function init() {
 }
 
 module.exports = {
-    init
+    init, dataSetChangeListener
 }
