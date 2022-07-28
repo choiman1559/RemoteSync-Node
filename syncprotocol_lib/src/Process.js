@@ -1,8 +1,14 @@
 const propertiesReader = require('properties-reader');
 const Device = require("./Device");
-const {responseDeviceInfoToFinder, onReceiveDeviceInfo, checkPairResultAndRegister, removePairedDevice} = require("./ProcessUtil");
 const {decode} = require("./AESCrypto");
 const {pairListener} = require("./index");
+
+const {
+    responseDeviceInfoToFinder,
+    onReceiveDeviceInfo,
+    checkPairResultAndRegister,
+    removePairedDevice
+} = require("./ProcessUtil");
 
 function onMessageReceived(data) {
     if(data.encrypted === "true") {

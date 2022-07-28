@@ -6,6 +6,54 @@
 </head>
 <body>
 
+<h1>SyncProtocol</h1>
+<p>Request remote task</p>
+<p> Running on Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    and Electron <span id="electron-version"></span>. </p>
+<br>
+
+<form name="form-html" action="">
+    <label>Select Device: </label>
+    <label for="DeviceSelection"></label>
+    <select id="DeviceSelection" onchange="onDeviceSelected()">
+        <option value="0">Select Device</option>
+    </select>
+</form>
+
+<form name="form-html" action="">
+    <label>Select Task: </label>
+    <label for="TaskSelection"></label>
+    <select id="TaskSelection" onchange="onTaskSelected()">
+        <option value="0">Select Task</option>
+        <option value="1">Show notification with text</option>
+        <option value="2">Copy text to clipboard</option>
+        <option value="3">Open link in Browser</option>
+        <option value="4">Trigger tasker event</option>
+        <option value="5">Run application</option>
+        <option value="6">Run terminal command</option>
+    </select>
+</form>
+
+<br>
+
+<form id="Args1Form" style="display: none;">
+    <label for="Args1" id="Args1Text">Argument 1: </label>
+    <input type="text" id="Args1" name="Args1"><br>
+</form>
+
+<form id="Args2Form" style="display: none;">
+    <label for="Args2" id="Args2Text">Argument 2: </label>
+    <input type="text" id="Args2" name="Args2"><br>
+</form>
+
+<br>
+
+<input type="submit"
+       value="Submit"
+       id="submitButton"
+       onclick="onClickSubmit()">
+
 <script src="renderer.js"></script>
 </body>
 </html>

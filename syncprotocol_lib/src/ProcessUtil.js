@@ -131,7 +131,6 @@ function removePairedDevice(device) {
     global.actionListener.onDeviceRemoved(device)
 }
 
-
 function requestRemovePair(device) {
     let data = {
         "type" : "pair|response_device_list",
@@ -200,12 +199,13 @@ function responseDataRequest(device, dataType, dataContent) {
 
 function requestAction(device, dataType, ...dataContent) {
     let string = ""
-    if(dataContent.index > 1) {
-        for(let str in dataContent) {
+    if(dataContent.length > 1) {
+        for(let i = 0;i < dataContent.length;i++) {
+            const str = dataContent[i]
             string += str + "|"
         }
         string = string.substring(0, string.length - 1)
-    } else if (dataContent.index === 1) string = dataContent[0]
+    } else if (dataContent.length === 1) string = dataContent[0]
 
     let data = {
         "type" : "pair|request_action",
@@ -215,9 +215,9 @@ function requestAction(device, dataType, ...dataContent) {
         "send_device_id" : device.deviceId,
         "date" : new Date().getTime(),
         "request_action" : dataType,
+        "action_args" : string
     }
 
-    if(dataContent.index > 0) data.action_args = string
     postRestApi(data)
 }
 

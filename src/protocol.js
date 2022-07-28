@@ -121,7 +121,6 @@ class Actions extends PairAction {
         let pairNotification = new Notification('New pair request incoming', {
             body: 'Requested Device: ' + device.deviceName + "\nClick this notification to pair",
             icon: path.join(__dirname, 'icon.png'),
-
         })
 
         pairNotification.onclick = () => {

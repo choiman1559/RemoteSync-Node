@@ -1,7 +1,7 @@
 {
   "name": "remotesync_desktop",
   "productName": "SyncProtocol",
-  "version": "1.0.0",
+  "version": "0.1.5",
   "description": "",
   "main": "./src/main.js",
   "scripts": {
@@ -17,7 +17,6 @@
   "dependencies": {
     "battery": "^1.0.1",
     "electron": "^19.0.9",
-    "firebase": "^9.9.0",
     "node-machine-id": "^1.1.12",
     "node-notifier": "^10.0.1",
     "open": "^8.4.0",
