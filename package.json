@@ -1,7 +1,7 @@
 {
   "name": "remotesync_desktop",
   "productName": "SyncProtocol",
-  "version": "0.1.5",
+  "version": "0.1.5-7",
   "description": "",
   "main": "./src/main.js",
   "scripts": {
@@ -40,7 +40,7 @@
         "zip",
         "nsis"
       ],
-      "icon": "./src/icon.png"
+      "icon": "./src/res/icon.png"
     },
     "linux": {
       "target": [
@@ -51,7 +51,8 @@
             "arm64"
           ]
         }
-      ]
+      ],
+      "icon": "./src/res/icon.icns"
     },
     "nsis": {
       "oneClick": false,
@@ -61,6 +62,10 @@
       "buildResources": "./resources/installer/",
       "output": "./out/",
       "app": "."
-    }
+    },
+    "files": [
+      "**/*",
+      "!src/config${/*}"
+    ]
   }
 }

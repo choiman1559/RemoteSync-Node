@@ -11,7 +11,7 @@ const {setup: setupPushReceiver} = require('electron-push-receiver')
 let mainWindow
 let isQuiting
 
-let iconPath = path.join(__dirname, 'icon.png')
+let iconPath = path.join(__dirname, '/res/icon.png')
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -59,8 +59,10 @@ function createWindow() {
     appIcon.setContextMenu(contextMenu)
 
     mainWindow.on('close', function (event) {
-        event.preventDefault()
-        mainWindow.hide()
+        if(!isQuiting) {
+            event.preventDefault()
+            mainWindow.hide()
+        }
     })
 
     mainWindow.on('minimize', function () {
@@ -73,9 +75,8 @@ function createWindow() {
 }
 
 app.on('before-quit', function () {
-    isQuiting = true;
+    isQuiting = true
 });
-
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') {

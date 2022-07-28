@@ -27,7 +27,6 @@ option.serverKey = "key=AAAARkkdxoQ:APA91bFH_JU9abB0B7OJT-fW0rVjDac-ny13ifdjLU9V
 option.pairingKey = "test100"
 option.identifierValue = machineIdSync(true)
 option.deviceName = require("os").hostname()
-option.propertiesLocation = __dirname + '/config/paired_devices.properties'
 
 class dataSetChange extends EventEmitter {}
 const dataSetChangeListener = new dataSetChange()
@@ -152,8 +151,23 @@ pairListener.on("onDataReceived", function (data) {
 })
 
 function init() {
+    let configDirectory;
+
+    if(fs.lstatSync(__dirname).isFile()) {
+        let paths = [], i = 1
+        while(i = __dirname.indexOf('/',i)+1) {
+            paths.push(__dirname.substr(0,i));
+        }
+        configDirectory = paths[paths.length - 1] + '/config/'
+    } else if(__dirname.endsWith("app.asar/src")) {
+        configDirectory = __dirname.replace("app.asar/src", "") + "/config/"
+    } else if(fs.lstatSync(__dirname).isDirectory()) {
+       configDirectory = __dirname + '/config/'
+    }
+
+    option.propertiesLocation = configDirectory + 'paired_devices.properties'
     if (!fs.existsSync(option.propertiesLocation)) {
-        fs.mkdirSync(__dirname + '/config/', {recursive: true});
+        fs.mkdirSync(configDirectory, {recursive: true});
         fs.writeFile(option.propertiesLocation, "", () => {
         })
     }
