@@ -1,5 +1,4 @@
 const {postRestApi} = require("./PostRequset");
-const propertiesReader = require("properties-reader");
 const {pairListener} = require("./index");
 
 function responseDeviceInfoToFinder(device) {
@@ -71,9 +70,8 @@ function responsePairAcceptation(device, accept) {
 
     let isNotRegistered = true;
     let dataToSave = device.deviceName + "|" + device.deviceId
-    const reader = propertiesReader(global.globalOption.propertiesLocation);
 
-    for (let str in JSON.parse(reader.get("paired_list"))) {
+    for (let str in JSON.parse(global.store.get("paired_list"))) {
         if (str === dataToSave) {
             isNotRegistered = false;
             break;
@@ -81,10 +79,9 @@ function responsePairAcceptation(device, accept) {
     }
 
     if(isNotRegistered) {
-        let newData = JSON.parse(reader.get("paired_list"))
+        let newData = JSON.parse(global.store.get("paired_list"))
         newData.push(dataToSave)
-        reader.set("paired_list", JSON.stringify(newData));
-        reader.save(global.globalOption.propertiesLocation)
+        global.store.set("paired_list", JSON.stringify(newData));
     }
 
     postRestApi(data)
@@ -94,9 +91,8 @@ function checkPairResultAndRegister(map, device) {
     if(map.pair_accept) {
         let isNotRegistered = true;
         let dataToSave = device.deviceName + "|" + device.deviceId
-        const reader = propertiesReader(global.globalOption.propertiesLocation);
 
-        for (let str in JSON.parse(reader.get("paired_list"))) {
+        for (let str in JSON.parse(global.store.get("paired_list"))) {
             if (str === dataToSave) {
                 isNotRegistered = false;
                 break;
@@ -104,11 +100,10 @@ function checkPairResultAndRegister(map, device) {
         }
 
         if(isNotRegistered) {
-            let newData = JSON.parse(reader.get("paired_list"))
+            let newData = JSON.parse(global.store.get("paired_list"))
             let foo = [newData]
             foo.push(dataToSave)
-            reader.set("paired_list", JSON.stringify(foo));
-            reader.save(global.globalOption.propertiesLocation)
+            global.store.set("paired_list", JSON.stringify(foo));
         }
 
         global.isFindingDeviceToPair = false;
@@ -122,12 +117,10 @@ function checkPairResultAndRegister(map, device) {
 }
 
 function removePairedDevice(device) {
-    const reader = propertiesReader(global.globalOption.propertiesLocation);
-    let newData = JSON.parse(reader.get("paired_list"))
+    let newData = JSON.parse(global.store.get("paired_list"))
 
     newData.splice(newData.indexOf(device.toString()), 1)
-    reader.set("paired_list", JSON.stringify(newData))
-    reader.save(global.globalOption.propertiesLocation)
+    global.store.set("paired_list", JSON.stringify(newData))
     global.actionListener.onDeviceRemoved(device)
 }
 

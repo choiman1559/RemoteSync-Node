@@ -1,12 +1,10 @@
-const fs = require('fs')
-const path = require("path");
-
 const Protocol = require("syncprotocol");
 const ConnectionOption = require("syncprotocol/src/ConnectionOption");
 const {PairAction} = require("syncprotocol/src/Actions");
 const {responsePairAcceptation, responseDataRequest, requestPair} = require("syncprotocol/src/ProcessUtil");
 const Device = require("syncprotocol/src/Device");
 
+const path = require("path");
 const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
 const {pairListener} = require("syncprotocol");
@@ -28,7 +26,9 @@ option.pairingKey = "test100"
 option.identifierValue = machineIdSync(true)
 option.deviceName = require("os").hostname()
 
-class dataSetChange extends EventEmitter {}
+class dataSetChange extends EventEmitter {
+}
+
 const dataSetChangeListener = new dataSetChange()
 
 class Actions extends PairAction {
@@ -93,8 +93,8 @@ class Actions extends PairAction {
         switch (map.request_data) {
             case "battery_info":
                 (async () => {
-                    const { level, charging } = await battery();
-                    dataToSend = (level * 100) + "|" + charging  + "|false"
+                    const {level, charging} = await battery();
+                    dataToSend = (level * 100) + "|" + charging + "|false"
                     responseDataRequest(new Device(map.device_name, map.device_id), map.request_data, dataToSend);
                     //TODO: What about desktop devices?
                 })();
@@ -122,8 +122,8 @@ class Actions extends PairAction {
     showPairChoiceAction(device) {
         super.showPairChoiceAction(device);
         let pairNotification = new Notification('New pair request incoming', {
-            body: 'Requested Device: ' + device.deviceName + "\nClick this notification to pair",
-            icon: path.join(__dirname, 'icon.png'),
+            body: 'Requested Device: ' + device.deviceName + "\n\nClick this notification to pair",
+            icon: path.join(__dirname, '/res/icon.png'),
         })
 
         pairNotification.onclick = () => {
@@ -141,7 +141,7 @@ pairListener.on("onDeviceFound", function (device) {
 })
 
 pairListener.on("onDevicePairResult", function (data) {
-    if(data.pair_accept) {
+    if (data.pair_accept) {
         dataSetChangeListener.emit("changed")
     }
 })
@@ -151,27 +151,6 @@ pairListener.on("onDataReceived", function (data) {
 })
 
 function init() {
-    let configDirectory;
-
-    if(fs.lstatSync(__dirname).isFile()) {
-        let paths = [], i = 1
-        while(i = __dirname.indexOf('/',i)+1) {
-            paths.push(__dirname.substr(0,i));
-        }
-        configDirectory = paths[paths.length - 1] + '/config/'
-    } else if(__dirname.endsWith("app.asar/src")) {
-        configDirectory = __dirname.replace("app.asar/src", "") + "/config/"
-    } else if(fs.lstatSync(__dirname).isDirectory()) {
-       configDirectory = __dirname + '/config/'
-    }
-
-    option.propertiesLocation = configDirectory + 'paired_devices.properties'
-    if (!fs.existsSync(option.propertiesLocation)) {
-        fs.mkdirSync(configDirectory, {recursive: true});
-        fs.writeFile(option.propertiesLocation, "", () => {
-        })
-    }
-
     Protocol.initialize(option, new Actions())
 }
 

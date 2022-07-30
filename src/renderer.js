@@ -1,7 +1,9 @@
 const {init, dataSetChangeListener} = require("./protocol");
-const propertiesReader = require("properties-reader");
 const Device = require("syncprotocol/src/Device");
 const {requestAction} = require("syncprotocol/src/ProcessUtil");
+const Store = require('electron-store');
+const path = require("path");
+const store = new Store();
 
 init()
 
@@ -16,16 +18,14 @@ const Args2EditText = getElement("Args2")
 
 const SubmitButton = getElement("submitButton")
 
-let reader = propertiesReader(global.globalOption.propertiesLocation);
 SubmitButton.disabled = true
 const deviceList = []
 
 function loadDeviceList() {
-    reader = propertiesReader(global.globalOption.propertiesLocation);
     while(deviceList.length) deviceList.pop()
     deviceSelect.innerHTML = '<option value="0">Select Device</option>'
 
-    const value = JSON.parse(reader.get("paired_list"))
+    const value = JSON.parse(store.get("paired_list"))
     for (let i = 0; i < value.length; i++) {
         const arr = value[i].split("|")
         deviceList.push(new Device(arr[0], arr[1]))
@@ -100,11 +100,25 @@ function onClickSubmit() {
 
     if (isArgs1Visible && isArgs2Visible) {
         requestAction(deviceList[deviceSelect.selectedIndex - 1], taskSelect.options[taskSelect.value].text, Args1EditText.value.trim(), Args2EditText.value.trim())
+        createToastNotification()
     } else if (isArgs1Visible) {
         requestAction(deviceList[deviceSelect.selectedIndex - 1], taskSelect.options[taskSelect.value].text, Args1EditText.value.trim())
+        createToastNotification()
     } else {
         requestAction(deviceList[deviceSelect.selectedIndex - 1], taskSelect.options[taskSelect.value].text)
+        createToastNotification()
     }
+}
+
+function createToastNotification() {
+    new Notification('New pair request incoming', {
+        body: "Your request has been transmitted!",
+        icon: path.join(__dirname, '/res/icon.png'),
+        buttons: [
+            { title: 'Mark' },
+            { title: 'Ignore' }
+        ]
+    })
 }
 
 function getElement(name) {

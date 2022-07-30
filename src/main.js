@@ -6,7 +6,7 @@ const Menu = electron.Menu
 
 const path = require('path')
 const url = require('url')
-const {setup: setupPushReceiver} = require('electron-push-receiver')
+const {initConfig} = require("syncprotocol/src/Store");
 
 let mainWindow
 let isQuiting
@@ -27,6 +27,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
+            enableRemoteModule: true,
         }
     });
 
@@ -39,7 +40,7 @@ function createWindow() {
         return true;
     })
 
-    setupPushReceiver(mainWindow.webContents);
+    initConfig(mainWindow)
 
     const appIcon = new Tray(electron.nativeImage.createFromPath(iconPath));
     const contextMenu = Menu.buildFromTemplate([

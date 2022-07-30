@@ -1,4 +1,3 @@
-const propertiesReader = require('properties-reader');
 const Device = require("./Device");
 const {decode} = require("./AESCrypto");
 const {pairListener} = require("./index");
@@ -134,8 +133,7 @@ function isTargetDevice(map) {
 
 function isPairedDevice(device) {
     let dataToFind = device.toString()
-    const reader = propertiesReader(global.globalOption.propertiesLocation);
-    const value = JSON.parse(reader.get("paired_list"))
+    const value = JSON.parse(global.store.get("paired_list"))
 
     for (let i = 0;i < value.length; i++) {
         const str = value[i]

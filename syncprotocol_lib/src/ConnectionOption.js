@@ -12,7 +12,6 @@ class ConnectionOption extends Object {
     printDebugLog
     showAlreadyConnected
     serverKey
-    propertiesLocation
     receiveFindRequest
     allowRemovePairRemotely
 }
