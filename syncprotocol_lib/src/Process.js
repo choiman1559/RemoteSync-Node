@@ -11,8 +11,10 @@ const {
 
 function onMessageReceived(data) {
     if(data.encrypted === "true") {
-        if(global.globalOption.encryptionEnabled && !global.globalOption.encryptionPassword.isEmpty()) {
-            onMessageReceived(JSON.parse(decode(data.encryptedData, global.globalOption.encryptionPassword)))
+        if(global.globalOption.encryptionEnabled && global.globalOption.encryptionPassword != null) {
+            decode(data.encryptedData, global.globalOption.encryptionPassword).then(decodedData => {
+                onMessageReceived(JSON.parse(decodedData.toString()))
+            });
         }
     } else processReception(data)
 }

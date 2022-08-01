@@ -13,8 +13,8 @@ const clipboard = require('electron').clipboard;
 
 const option = new ConnectionOption()
 
-option.encryptionEnabled = false
-option.encryptionPassword = ""
+option.encryptionEnabled = true
+option.encryptionPassword = "test999"
 option.printDebugLog = true
 option.showAlreadyConnected = false
 option.receiveFindRequest = true
@@ -48,7 +48,7 @@ class Actions extends PairAction {
                     console.log(actionArgs[0] + " " + actionArgs[1])
                     new Notification(actionArgs[0], {
                         body: actionArgs[1],
-                        icon: path.join(__dirname, 'icon.png'),
+                        icon: path.join(__dirname, '/res/icon.png'),
                     })
                     break;
 

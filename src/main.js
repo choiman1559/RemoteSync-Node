@@ -22,6 +22,8 @@ function createWindow() {
         minHeight: 670,
         maxHeight: 670,
         height: 670,
+
+        show: false,
         maximizable: false,
         icon: iconPath,
         webPreferences: {
@@ -60,7 +62,7 @@ function createWindow() {
     appIcon.setContextMenu(contextMenu)
 
     mainWindow.on('close', function (event) {
-        if(!isQuiting) {
+        if (!isQuiting) {
             event.preventDefault()
             mainWindow.hide()
         }

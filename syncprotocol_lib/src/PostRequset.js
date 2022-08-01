@@ -24,15 +24,19 @@ function postRestApi(data) {
     }
 
     if (global.globalOption.encryptionEnabled && global.globalOption.encryptionPassword !== "") {
-        let newData = {};
-        newData.encrypted = true
-        newData.encryptedData = encode(JSON.stringify(data.data), global.globalOption.encryptionPassword)
-        head.data = newData;
+        encode(JSON.stringify(data), global.globalOption.encryptionPassword).then((encoded) => {
+            if(encoded != null) {
+                let newData = {};
+                newData.encrypted = true
+                newData.encryptedData = encoded
+                head.data = newData;
+                xhr.send(JSON.stringify(head))
+            }
+        })
     } else {
         head.data.encrypted = false
+        xhr.send(JSON.stringify(head))
     }
-
-    xhr.send(JSON.stringify(head))
 }
 
 module.exports = {

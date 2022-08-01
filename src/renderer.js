@@ -111,13 +111,9 @@ function onClickSubmit() {
 }
 
 function createToastNotification() {
-    new Notification('New pair request incoming', {
+    new Notification('SyncProtocol', {
         body: "Your request has been transmitted!",
         icon: path.join(__dirname, '/res/icon.png'),
-        buttons: [
-            { title: 'Mark' },
-            { title: 'Ignore' }
-        ]
     })
 }
 
