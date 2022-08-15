@@ -9,9 +9,9 @@ const path = require("path");
 const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
 const EventEmitter = require("events");
+const {setConnectionOption} = require("syncprotocol");
 const clipboard = require('electron').clipboard;
 
-const option = new ConnectionOption()
 const store = new Store()
 
 function getPreferenceValue(key, defValue) {
@@ -19,20 +19,27 @@ function getPreferenceValue(key, defValue) {
     return value == null ? defValue : value
 }
 
-//Customizable options
-option.encryptionEnabled = getPreferenceValue("encryptionEnabled", false)
-option.encryptionPassword = getPreferenceValue("encryptionPassword","")
-option.printDebugLog = getPreferenceValue("printDebugLog",false)
-option.showAlreadyConnected = getPreferenceValue("showAlreadyConnected",false)
-option.receiveFindRequest = getPreferenceValue("receiveFindRequest",false)
-option.allowRemovePairRemotely = getPreferenceValue("allowRemovePairRemotely",true)
-option.pairingKey = getPreferenceValue("pairingKey", "test100")
+function settingOption() {
+    const option = new ConnectionOption()
 
-//Non-Customizable options
-option.senderId = '301874398852'
-option.serverKey = "key=AAAARkkdxoQ:APA91bFH_JU9abB0B7OJT-fW0rVjDac-ny13ifdjLU9VqFPp0akohPNVZvfo6mBTFBddcsbgo-pFvtYEyQ62Ohb_arw1GjEqEl4Krc7InJXTxyGqPUkz-VwgTsGzP8Gv_5ZfuqICk7S2"
-option.identifierValue = machineIdSync(true)
-option.deviceName = require("os").hostname()
+    //Customizable options
+    option.enabled = true
+    option.encryptionEnabled = getPreferenceValue("encryptionEnabled", false)
+    option.encryptionPassword = getPreferenceValue("encryptionPassword", "")
+    option.printDebugLog = getPreferenceValue("printDebugLog", false)
+    option.showAlreadyConnected = getPreferenceValue("showAlreadyConnected", false)
+    option.receiveFindRequest = getPreferenceValue("receiveFindRequest", false)
+    option.allowRemovePairRemotely = getPreferenceValue("allowRemovePairRemotely", true)
+    option.pairingKey = getPreferenceValue("pairingKey", "test100")
+
+    //Non-Customizable options
+    option.senderId = '301874398852'
+    option.serverKey = "key=AAAARkkdxoQ:APA91bFH_JU9abB0B7OJT-fW0rVjDac-ny13ifdjLU9VqFPp0akohPNVZvfo6mBTFBddcsbgo-pFvtYEyQ62Ohb_arw1GjEqEl4Krc7InJXTxyGqPUkz-VwgTsGzP8Gv_5ZfuqICk7S2"
+    option.identifierValue = machineIdSync(true)
+    option.deviceName = require("os").hostname()
+
+    return option
+}
 
 class dataSetChange extends EventEmitter {
 }
@@ -158,9 +165,15 @@ class Actions extends PairAction {
 }
 
 function init() {
-    Protocol.initialize(option, new Actions())
+    Protocol.initialize(settingOption(), new Actions())
+}
+
+function changeOption() {
+    setConnectionOption(settingOption())
 }
 
 module.exports = {
-    init, dataSetChangeListener
+    init,
+    dataSetChangeListener,
+    changeOption
 }

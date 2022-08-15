@@ -3,6 +3,7 @@ class ConnectionOption extends Object {
         super();
     }
 
+    enabled
     pairingKey
     senderId
     identifierValue

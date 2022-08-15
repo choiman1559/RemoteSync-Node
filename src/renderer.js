@@ -1,4 +1,4 @@
-const {init, dataSetChangeListener} = require("./protocol");
+const {init, dataSetChangeListener, changeOption} = require("./protocol");
 const Device = require("syncprotocol/src/Device");
 const {
     requestAction,
@@ -174,6 +174,12 @@ function onModalCloseClick() {
     deviceDetail.style.display = "none"
 }
 
+window.onclick = function(event) {
+    if (event.target === deviceDetail) {
+        deviceDetail.style.display = "none";
+    }
+}
+
 function getElement(name) {
     return document.getElementById(name)
 }
@@ -193,4 +199,5 @@ pairingKey.value = getPreferenceValue("pairingKey", "test100")
 
 function onValueChanged(id, type) {
     store.set(id, type === "checked" ? getElement(id).checked : getElement(id).value)
+    changeOption()
 }
