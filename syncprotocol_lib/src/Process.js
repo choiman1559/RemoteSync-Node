@@ -1,6 +1,5 @@
 const Device = require("./Device");
 const {decode} = require("./AESCrypto");
-const {pairListener} = require("./index");
 
 const {
     responseDeviceInfoToFinder,
@@ -87,7 +86,7 @@ function processReception(data) {
                 case "pair|receive_data":
                     //process received normal data here sent by paired device(s).
                     if (isTargetDevice(data) && isPairedDevice(device)) {
-                        pairListener.emit("onDataReceived", data)
+                        global.actionListener.onDataReceived(data)
                     }
                     break;
 

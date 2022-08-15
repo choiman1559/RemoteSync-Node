@@ -1,8 +1,12 @@
 const {init, dataSetChangeListener} = require("./protocol");
 const Device = require("syncprotocol/src/Device");
-const {requestAction} = require("syncprotocol/src/ProcessUtil");
+const {
+    requestAction,
+    sendFindTargetDesignatedNotification,
+    removePairedDevice,
+    requestRemovePair
+} = require("syncprotocol/src/ProcessUtil");
 const Store = require('electron-store');
-const path = require("path");
 const store = new Store();
 
 init()
@@ -18,23 +22,48 @@ const Args2EditText = getElement("Args2")
 
 const SubmitButton = getElement("submitButton")
 
+const DeviceList = getElement("deviceList")
+const deviceDetail = getElement("deviceDetail")
+
+const pairingKey = getElement("pairingKey")
+const encryptionEnabled = getElement("encryptionEnabled")
+const encryptionPassword = getElement("encryptionPassword")
+const printDebugLog = getElement("printDebugLog")
+const showAlreadyConnected = getElement("showAlreadyConnected")
+const allowRemovePairRemotely = getElement("allowRemovePairRemotely")
+const receiveFindRequest = getElement("receiveFindRequest")
+
 SubmitButton.disabled = true
 const deviceList = []
+let deviceListIndex = 0
+let modalSelectedDevice
 
 function loadDeviceList() {
-    while(deviceList.length) deviceList.pop()
+    while (deviceList.length) deviceList.pop()
+    deviceListIndex = 0
+
     deviceSelect.innerHTML = '<option value="0">Select Device</option>'
+    DeviceList.innerHTML = ""
 
     const value = JSON.parse(store.get("paired_list"))
     for (let i = 0; i < value.length; i++) {
         const arr = value[i].split("|")
         deviceList.push(new Device(arr[0], arr[1]))
         deviceSelect.add(new Option(arr[0]))
+        DeviceList.innerHTML += '<li class="mdl-list__item" style="height: 65px">\n' +
+            '                    <span class="mdl-list__item-primary-content">\n' +
+            '                        <i class="material-icons mdl-list__item-avatar">smartphone</i>\n' + arr[0] + '\n' +
+            '                    </span>\n' +
+            '                    <span class="mdl-list__item-secondary-action">\n' +
+            '                         <a class="icon material-icons" onclick="onDeviceItemClick(this.id)" id="device' + deviceListIndex + '" href="#" style="text-decoration:none;">settings</a>\n' +
+            '                    </span>\n' +
+            '                </li>'
+        deviceListIndex += 1;
     }
 }
 
 loadDeviceList()
-dataSetChangeListener.on("changed", function() {
+dataSetChangeListener.on("changed", function () {
     loadDeviceList()
 })
 
@@ -46,22 +75,22 @@ function onTaskSelected() {
             Args1Form.style.display = "block"
             Args2Form.style.display = "block"
 
-            getElement("Args1Text").innerText = "Notification Title: "
-            getElement("Args2Text").innerText = "Notification Content: "
+            getElement("Args1Text").innerText = "Notification Title"
+            getElement("Args2Text").innerText = "Notification Content"
             break;
 
         case "2":
             Args1Form.style.display = "block"
             Args2Form.style.display = "none"
 
-            getElement("Args1Text").innerText = "Text to send: "
+            getElement("Args1Text").innerText = "Text to send"
             break;
 
         case "3":
             Args1Form.style.display = "block"
             Args2Form.style.display = "none"
 
-            getElement("Args1Text").innerText = "Url to open in browser: "
+            getElement("Args1Text").innerText = "Url to open in browser"
             break;
 
         case "4":
@@ -73,14 +102,14 @@ function onTaskSelected() {
             Args1Form.style.display = "block"
             Args2Form.style.display = "none"
 
-            getElement("Args1Text").innerText = "app's package name to open: "
+            getElement("Args1Text").innerText = "app's package name to open"
             break;
 
         case "6":
             Args1Form.style.display = "block"
             Args2Form.style.display = "none"
 
-            getElement("Args1Text").innerText = "Type terminal command to run: "
+            getElement("Args1Text").innerText = "Type terminal command to run"
             break;
 
         default:
@@ -111,23 +140,57 @@ function onClickSubmit() {
 }
 
 function createToastNotification() {
-    new Notification('SyncProtocol', {
-        body: "Your request has been transmitted!",
-        icon: path.join(__dirname, '/res/icon.png'),
-    })
+    const data = {
+        message: 'Your request has been transmitted!',
+        timeout: 2000,
+        actionText: 'Okay'
+    };
+
+    const snackbarDom = document.querySelector('#snackbar')
+    snackbarDom.MaterialSnackbar.showSnackbar(data);
+
+    Args1EditText.value = ""
+    Args2EditText.value = ""
+}
+
+function onDeviceItemClick(index) {
+    modalSelectedDevice = deviceList[index.replace("device", "")]
+    getElement("deviceName").innerText = modalSelectedDevice.deviceName
+    deviceDetail.style.display = "block"
+}
+
+function onFindButtonClick() {
+    sendFindTargetDesignatedNotification(modalSelectedDevice)
+}
+
+function onForgetButtonClick() {
+    removePairedDevice(modalSelectedDevice)
+    requestRemovePair(modalSelectedDevice)
+    onModalCloseClick()
+    loadDeviceList()
+}
+
+function onModalCloseClick() {
+    deviceDetail.style.display = "none"
 }
 
 function getElement(name) {
     return document.getElementById(name)
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    const replaceText = (selector, text) => {
-        const element = document.getElementById(selector)
-        if (element) element.innerText = text
-    }
+function getPreferenceValue(key, defValue) {
+    const value = store.get(key)
+    return value == null ? defValue : value
+}
 
-    for (const dependency of ['chrome', 'node', 'electron']) {
-        replaceText(`${dependency}-version`, process.versions[dependency])
-    }
-})
+encryptionEnabled.checked = getPreferenceValue("encryptionEnabled", false)
+encryptionPassword.value = getPreferenceValue("encryptionPassword", "")
+printDebugLog.checked = getPreferenceValue("printDebugLog", false)
+showAlreadyConnected.checked = getPreferenceValue("showAlreadyConnected", false)
+receiveFindRequest.checked = getPreferenceValue("receiveFindRequest", false)
+allowRemovePairRemotely.checked = getPreferenceValue("allowRemovePairRemotely", true)
+pairingKey.value = getPreferenceValue("pairingKey", "test100")
+
+function onValueChanged(id, type) {
+    store.set(id, type === "checked" ? getElement(id).checked : getElement(id).value)
+}

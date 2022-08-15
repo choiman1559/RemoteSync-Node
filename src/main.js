@@ -3,6 +3,7 @@ const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 const Tray = electron.Tray
 const Menu = electron.Menu
+const ipcMain = electron.ipcMain
 
 const path = require('path')
 const url = require('url')
@@ -14,14 +15,17 @@ let isQuiting
 let iconPath = path.join(__dirname, '/res/icon.png')
 
 function createWindow() {
-    mainWindow = new BrowserWindow({
-        minWidth: 440,
-        maxWidth: 440,
-        width: 440,
+    const windowWidth = 440
+    const windowHeight = 670
 
-        minHeight: 670,
-        maxHeight: 670,
-        height: 670,
+    mainWindow = new BrowserWindow({
+        minWidth: windowWidth,
+        maxWidth: windowWidth,
+        width: windowWidth,
+
+        minHeight: windowHeight,
+        maxHeight: windowHeight,
+        height: windowHeight,
 
         show: false,
         maximizable: false,
@@ -91,6 +95,11 @@ app.on('activate', function () {
     if (mainWindow === null) {
         createWindow()
     }
+})
+
+
+ipcMain.on('goBack', async () => {
+    mainWindow.webContents.goBack()
 })
 
 const gotTheLock = app.requestSingleInstanceLock()

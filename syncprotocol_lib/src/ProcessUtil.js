@@ -27,7 +27,7 @@ function requestDeviceListWidely() {
 }
 
 function onReceiveDeviceInfo(device) {
-    pairListener.emit("onDeviceFound", device)
+    global.actionListener.onDeviceFound(device)
 }
 
 function requestPair(device) {
@@ -113,7 +113,7 @@ function checkPairResultAndRegister(map, device) {
         }
     }
 
-    pairListener.emit("onDevicePairResult", map)
+    global.actionListener.onDevicePairResult(map)
 }
 
 function removePairedDevice(device) {

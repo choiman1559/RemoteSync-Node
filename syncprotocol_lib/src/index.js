@@ -1,6 +1,5 @@
 const {ipcRenderer} = require('electron')
 const {onMessageReceived} = require("./Process");
-const EventEmitter = require('events');
 const Store = require('electron-store');
 
 const {
@@ -10,9 +9,6 @@ const {
     NOTIFICATION_RECEIVED,
     TOKEN_UPDATED,
 } = require('electron-push-receiver/src/constants')
-
-class PairListener extends EventEmitter {}
-const pairListener = new PairListener()
 
 function initialize(option, action) {
     global.globalOption = option
@@ -58,5 +54,5 @@ function initialize(option, action) {
 }
 
 module.exports = {
-    initialize, pairListener
+    initialize
 };

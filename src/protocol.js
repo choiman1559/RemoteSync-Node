@@ -3,26 +3,34 @@ const ConnectionOption = require("syncprotocol/src/ConnectionOption");
 const {PairAction} = require("syncprotocol/src/Actions");
 const {responsePairAcceptation, responseDataRequest, requestPair} = require("syncprotocol/src/ProcessUtil");
 const Device = require("syncprotocol/src/Device");
+const Store = require('electron-store');
 
 const path = require("path");
 const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
-const {pairListener} = require("syncprotocol");
 const EventEmitter = require("events");
 const clipboard = require('electron').clipboard;
 
 const option = new ConnectionOption()
+const store = new Store()
 
-option.encryptionEnabled = true
-option.encryptionPassword = "test999"
-option.printDebugLog = true
-option.showAlreadyConnected = false
-option.receiveFindRequest = true
-option.allowRemovePairRemotely = true
+function getPreferenceValue(key, defValue) {
+    const value = store.get(key)
+    return value == null ? defValue : value
+}
 
+//Customizable options
+option.encryptionEnabled = getPreferenceValue("encryptionEnabled", false)
+option.encryptionPassword = getPreferenceValue("encryptionPassword","")
+option.printDebugLog = getPreferenceValue("printDebugLog",false)
+option.showAlreadyConnected = getPreferenceValue("showAlreadyConnected",false)
+option.receiveFindRequest = getPreferenceValue("receiveFindRequest",false)
+option.allowRemovePairRemotely = getPreferenceValue("allowRemovePairRemotely",true)
+option.pairingKey = getPreferenceValue("pairingKey", "test100")
+
+//Non-Customizable options
 option.senderId = '301874398852'
 option.serverKey = "key=AAAARkkdxoQ:APA91bFH_JU9abB0B7OJT-fW0rVjDac-ny13ifdjLU9VqFPp0akohPNVZvfo6mBTFBddcsbgo-pFvtYEyQ62Ohb_arw1GjEqEl4Krc7InJXTxyGqPUkz-VwgTsGzP8Gv_5ZfuqICk7S2"
-option.pairingKey = "test100"
 option.identifierValue = machineIdSync(true)
 option.deviceName = require("os").hostname()
 
@@ -45,7 +53,6 @@ class Actions extends PairAction {
         if (actionType != null) {
             switch (actionType) {
                 case "Show notification with text":
-                    console.log(actionArgs[0] + " " + actionArgs[1])
                     new Notification(actionArgs[0], {
                         body: actionArgs[1],
                         icon: path.join(__dirname, '/res/icon.png'),
@@ -134,21 +141,21 @@ class Actions extends PairAction {
     onDeviceRemoved(device) {
         dataSetChangeListener.emit("changed")
     }
-}
 
-pairListener.on("onDeviceFound", function (device) {
-    requestPair(device)
-})
-
-pairListener.on("onDevicePairResult", function (data) {
-    if (data.pair_accept) {
-        dataSetChangeListener.emit("changed")
+    onDeviceFound(device) {
+        requestPair(device)
     }
-})
 
-pairListener.on("onDataReceived", function (data) {
-    //Nothing to do yet
-})
+    onDevicePairResult(data) {
+        if (data.pair_accept) {
+            dataSetChangeListener.emit("changed")
+        }
+    }
+
+    onDataReceived(data) {
+        //Nothing to do yet
+    }
+}
 
 function init() {
     Protocol.initialize(option, new Actions())
