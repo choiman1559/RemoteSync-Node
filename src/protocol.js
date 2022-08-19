@@ -31,6 +31,7 @@ function settingOption() {
     option.receiveFindRequest = getPreferenceValue("receiveFindRequest", false)
     option.allowRemovePairRemotely = getPreferenceValue("allowRemovePairRemotely", true)
     option.pairingKey = getPreferenceValue("pairingKey", "test100")
+    option.authWithHMac = getPreferenceValue("hmacAuthEnabled", false)
 
     //Non-Customizable options
     option.senderId = '301874398852'

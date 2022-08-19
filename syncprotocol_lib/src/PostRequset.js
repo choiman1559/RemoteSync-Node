@@ -1,4 +1,4 @@
-const {encode} = require("./AESCrypto");
+const {encode, encodeMac} = require("./AESCrypto");
 
 function postRestApi(data) {
     const FCM_API = "https://fcm.googleapis.com/fcm/send";
@@ -24,15 +24,32 @@ function postRestApi(data) {
     }
 
     if (global.globalOption.encryptionEnabled && global.globalOption.encryptionPassword !== "") {
-        encode(JSON.stringify(data), global.globalOption.encryptionPassword).then((encoded) => {
-            if(encoded != null) {
-                let newData = {};
-                newData.encrypted = true
-                newData.encryptedData = encoded
-                head.data = newData;
-                xhr.send(JSON.stringify(head))
-            }
-        })
+        let isFirstFetch = data.type === "pair|request_device_list"
+
+        if(global.globalOption.authWithHMac) {
+            let hashKey = isFirstFetch ? global.globalOption.pairingKey : data.send_device_id
+            encodeMac(JSON.stringify(data), global.globalOption.encryptionPassword, hashKey).then((encoded) => {
+                if(encoded != null) {
+                    let newData = {};
+                    newData.encrypted = true
+                    newData.encryptedData = encoded
+                    newData.isFirstFetch = isFirstFetch
+                    head.data = newData;
+                    xhr.send(JSON.stringify(head))
+                }
+            })
+        } else {
+            encode(JSON.stringify(data), global.globalOption.encryptionPassword).then((encoded) => {
+                if(encoded != null) {
+                    let newData = {};
+                    newData.encrypted = true
+                    newData.encryptedData = encoded
+                    newData.isFirstFetch = isFirstFetch
+                    head.data = newData;
+                    xhr.send(JSON.stringify(head))
+                }
+            })
+        }
     } else {
         head.data.encrypted = false
         xhr.send(JSON.stringify(head))

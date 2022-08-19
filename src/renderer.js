@@ -1,4 +1,6 @@
-const {init, dataSetChangeListener, changeOption} = require("./protocol");
+const {init,
+    dataSetChangeListener,
+    changeOption} = require("./protocol");
 const Device = require("syncprotocol/src/Device");
 const {
     requestAction,
@@ -6,10 +8,16 @@ const {
     removePairedDevice,
     requestRemovePair
 } = require("syncprotocol/src/ProcessUtil");
+
 const Store = require('electron-store');
+const {
+    getBackgroundColor,
+    getForegroundColor
+} = require("./randColor");
 const store = new Store();
 
-init()
+const isDesignDebugMode = false
+if (!isDesignDebugMode) init()
 
 const taskSelect = getElement('TaskSelection')
 const deviceSelect = getElement("DeviceSelection")
@@ -28,6 +36,7 @@ const deviceDetail = getElement("deviceDetail")
 const pairingKey = getElement("pairingKey")
 const encryptionEnabled = getElement("encryptionEnabled")
 const encryptionPassword = getElement("encryptionPassword")
+const hmacAuthEnabled = getElement("hmacAuthEnabled")
 const printDebugLog = getElement("printDebugLog")
 const showAlreadyConnected = getElement("showAlreadyConnected")
 const allowRemovePairRemotely = getElement("allowRemovePairRemotely")
@@ -51,8 +60,11 @@ function loadDeviceList() {
         deviceList.push(new Device(arr[0], arr[1]))
         deviceSelect.add(new Option(arr[0]))
         DeviceList.innerHTML += '<li class="mdl-list__item" style="height: 65px">\n' +
+            '                     <div class="device_icon_background" style="background-color: ' + getBackgroundColor(arr[0]) + '">\n' +
+            '                           <i class="device_icon_text material-icons" style="color: ' + getForegroundColor(arr[0]) + '">smartphone</i>' +
+            '                     </div>\n' +
             '                    <span class="mdl-list__item-primary-content">\n' +
-            '                        <i class="material-icons mdl-list__item-avatar">smartphone</i>\n' + arr[0] + '\n' +
+            '                       &nbsp;&nbsp;&nbsp;' + arr[0] + '\n' +
             '                    </span>\n' +
             '                    <span class="mdl-list__item-secondary-action">\n' +
             '                         <a class="icon material-icons" onclick="onDeviceItemClick(this.id)" id="device' + deviceListIndex + '" href="#" style="text-decoration:none;">settings</a>\n' +
@@ -174,7 +186,7 @@ function onModalCloseClick() {
     deviceDetail.style.display = "none"
 }
 
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target === deviceDetail) {
         deviceDetail.style.display = "none";
     }
@@ -190,6 +202,7 @@ function getPreferenceValue(key, defValue) {
 }
 
 encryptionEnabled.checked = getPreferenceValue("encryptionEnabled", false)
+hmacAuthEnabled.checked = getPreferenceValue("hmacAuthEnabled", false)
 encryptionPassword.value = getPreferenceValue("encryptionPassword", "")
 printDebugLog.checked = getPreferenceValue("printDebugLog", false)
 showAlreadyConnected.checked = getPreferenceValue("showAlreadyConnected", false)

@@ -1,5 +1,5 @@
 const Device = require("./Device");
-const {decode} = require("./AESCrypto");
+const {decode, decodeMac} = require("./AESCrypto");
 
 const {
     responseDeviceInfoToFinder,
@@ -11,9 +11,17 @@ const {
 function onMessageReceived(data) {
     if(data.encrypted === "true") {
         if(global.globalOption.encryptionEnabled && global.globalOption.encryptionPassword != null) {
-            decode(data.encryptedData, global.globalOption.encryptionPassword).then(decodedData => {
-                onMessageReceived(JSON.parse(decodedData.toString()))
-            });
+            if(global.globalOption.authWithHMac) {
+                let hash = data.isFirstFetch === "true" ? global.globalOption.pairingKey : global.globalOption.identifierValue
+                console.log(hash)
+                decodeMac(data.encryptedData, global.globalOption.encryptionPassword, hash).then(decodedData => {
+                    if(decodedData !== "") onMessageReceived(JSON.parse(decodedData.toString()))
+                });
+            } else {
+                decode(data.encryptedData, global.globalOption.encryptionPassword).then(decodedData => {
+                    onMessageReceived(JSON.parse(decodedData.toString()))
+                });
+            }
         }
     } else processReception(data)
 }

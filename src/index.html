@@ -113,7 +113,7 @@
                     <div style="line-height: 28px;">
                         <i style="font-size: 20px;font-style: normal"><b>Sync Protocol</b></i>
                         <br>
-                        <label id="version">Version 0.2.1</label>
+                        <label id="version">Version 0.2.3</label>
                     </div>
                 </div>
 
@@ -129,6 +129,13 @@
                     <input type="checkbox" id="encryptionEnabled" class="mdl-switch__input"
                            onchange="onValueChanged('encryptionEnabled','checked')">
                     <span class="mdl-switch__label">Encrypt sending Data</span>
+                </label>
+
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="hmacAuthEnabled"
+                       style="margin-top: 8px">
+                    <input type="checkbox" id="hmacAuthEnabled" class="mdl-switch__input"
+                           onchange="onValueChanged('hmacAuthEnabled','checked')">
+                    <span class="mdl-switch__label">Use message authentication</span>
                 </label>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -181,9 +188,28 @@
 
             .modal-content {
                 background-color: #fefefe;
-                margin: 15% auto;
+                margin: 5%;
                 padding: 20px;
                 border: 1px solid #888;
+            }
+
+            .device_icon_background {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: inline-block;
+                text-align: center;
+                overflow: hidden;
+                position: relative;
+                background-color: #757575;
+            }
+
+            .device_icon_text {
+                transform: translate(-50%, -50%);
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                color: #FFFFFF;
             }
         </style>
 
@@ -205,6 +231,8 @@
                 <button class="mdl-button mdl-js-button mdl-button--raised" onclick="onModalCloseClick()">
                     Close
                 </button>
+
+
             </div>
         </div>
 

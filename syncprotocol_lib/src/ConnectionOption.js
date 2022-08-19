@@ -15,6 +15,7 @@ class ConnectionOption extends Object {
     serverKey
     receiveFindRequest
     allowRemovePairRemotely
+    authWithHMac
 }
 
 module.exports = ConnectionOption

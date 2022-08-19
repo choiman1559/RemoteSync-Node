@@ -1,5 +1,4 @@
 const {postRestApi} = require("./PostRequset");
-const {pairListener} = require("./index");
 
 function responseDeviceInfoToFinder(device) {
     let data = {
