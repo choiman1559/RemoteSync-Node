@@ -143,25 +143,12 @@ class Actions extends PairAction {
 
         pairNotification.onclick = () => {
             responsePairAcceptation(device, true)
+            dataSetChangeListener.emit("changed")
         }
     }
 
     onDeviceRemoved(device) {
         dataSetChangeListener.emit("changed")
-    }
-
-    onDeviceFound(device) {
-        requestPair(device)
-    }
-
-    onDevicePairResult(data) {
-        if (data.pair_accept) {
-            dataSetChangeListener.emit("changed")
-        }
-    }
-
-    onDataReceived(data) {
-        //Nothing to do yet
     }
 }
 

@@ -12,5 +12,6 @@
     <orderEntry type="library" name="@types/electron-installer-dmg" level="application" />
     <orderEntry type="library" name="jquery.mobile-1.4.5" level="application" />
     <orderEntry type="library" name="jquery-1.11.1" level="application" />
+    <orderEntry type="library" name="iconify-icon" level="application" />
   </component>
 </module>

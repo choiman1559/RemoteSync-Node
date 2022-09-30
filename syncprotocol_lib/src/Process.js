@@ -1,5 +1,6 @@
 const Device = require("./Device");
 const {decode, decodeMac} = require("./AESCrypto");
+const {getEventListener, EVENT_TYPE} = require("./Listener");
 
 const {
     responseDeviceInfoToFinder,
@@ -11,14 +12,14 @@ const {
 function onMessageReceived(data) {
     if(data.encrypted === "true") {
         if(global.globalOption.encryptionEnabled && global.globalOption.encryptionPassword != null) {
+            if(data.is_first_fetch === "false" && !data.send_device_name === global.globalOption.deviceName) return
             if(global.globalOption.authWithHMac) {
-                let hash = data.isFirstFetch === "true" ? global.globalOption.pairingKey : global.globalOption.identifierValue
-                console.log(hash)
-                decodeMac(data.encryptedData, global.globalOption.encryptionPassword, hash).then(decodedData => {
+                let hash = data.is_first_fetch === "true" ? global.globalOption.pairingKey : global.globalOption.identifierValue
+                decodeMac(data.encrypted_data, global.globalOption.encryptionPassword, hash).then(decodedData => {
                     if(decodedData !== "") onMessageReceived(JSON.parse(decodedData.toString()))
                 });
             } else {
-                decode(data.encryptedData, global.globalOption.encryptionPassword).then(decodedData => {
+                decode(data.encrypted_data, global.globalOption.encryptionPassword).then(decodedData => {
                     onMessageReceived(JSON.parse(decodedData.toString()))
                 });
             }
@@ -38,7 +39,7 @@ function processReception(data) {
                     //Target Device action
                     //Have to Send this device info Data Now
                     if (!isPairedDevice(data) || global.globalOption.showAlreadyConnected) {
-                        global.pairingProcessList.push(device.toString());
+                        if(global.pairingProcessList.indexOf(device.toString()) < 0) global.pairingProcessList.push(device.toString());
                         global.isListeningToPair = true;
                         responseDeviceInfoToFinder(device)
                     }
@@ -48,7 +49,7 @@ function processReception(data) {
                     //Request Device Action
                     //Show device list here; give choice to user which device to pair
                     if (global.isFindingDeviceToPair && (!isPairedDevice(device) || global.globalOption.showAlreadyConnected)) {
-                        global.pairingProcessList.push(device.toString());
+                        if(global.pairingProcessList.indexOf(device.toString()) < 0) global.pairingProcessList.push(device.toString());
                         onReceiveDeviceInfo(device)
                     }
                     break;
@@ -57,7 +58,7 @@ function processReception(data) {
                     //Target Device action
                     //Show choice notification (or activity) to user whether user wants to pair this device with another one or not
                     if (global.isListeningToPair && isTargetDevice(data)) {
-                        for (let info in pairingProcessList) {
+                        for (let info of pairingProcessList) {
                             if (info === device.toString()) {
                                 global.actionListener.showPairChoiceAction(device)
                             }
@@ -70,7 +71,7 @@ function processReception(data) {
                     //Request Device Action
                     //Check if target accepted to pair and process result here
                     if (global.isFindingDeviceToPair && isTargetDevice(data)) {
-                        for (let info in pairingProcessList) {
+                        for (let info of pairingProcessList) {
                             if (info === device.toString()) {
                                 checkPairResultAndRegister(data, device)
                             }
@@ -94,7 +95,7 @@ function processReception(data) {
                 case "pair|receive_data":
                     //process received normal data here sent by paired device(s).
                     if (isTargetDevice(data) && isPairedDevice(device)) {
-                        global.actionListener.onDataReceived(data)
+                        getEventListener().emit(EVENT_TYPE.ON_DATA_RECEIVED, data)
                     }
                     break;
 

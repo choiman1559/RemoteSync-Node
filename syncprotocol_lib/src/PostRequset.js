@@ -32,8 +32,9 @@ function postRestApi(data) {
                 if(encoded != null) {
                     let newData = {};
                     newData.encrypted = true
-                    newData.encryptedData = encoded
-                    newData.isFirstFetch = isFirstFetch
+                    newData.encrypted_data = encoded
+                    newData.is_first_fetch = isFirstFetch
+                    if(!isFirstFetch) newData.send_device_name = data.send_device_name
                     head.data = newData;
                     xhr.send(JSON.stringify(head))
                 }
@@ -43,8 +44,9 @@ function postRestApi(data) {
                 if(encoded != null) {
                     let newData = {};
                     newData.encrypted = true
-                    newData.encryptedData = encoded
-                    newData.isFirstFetch = isFirstFetch
+                    newData.encrypted_data = encoded
+                    newData.is_first_fetch = isFirstFetch
+                    if(!isFirstFetch) newData.send_device_name = data.send_device_name
                     head.data = newData;
                     xhr.send(JSON.stringify(head))
                 }

@@ -17,7 +17,7 @@
         <div class="mdl-layout__header-row">
             <span class="mdl-layout-title">SyncProtocol</span>
         </div>
-        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect" onclick="onModalCloseClick()">
             <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Devices</a>
             <a href="#fixed-tab-2" class="mdl-layout__tab">Actions</a>
             <a href="#fixed-tab-3" class="mdl-layout__tab">Settings</a>
@@ -39,7 +39,7 @@
             <div class="page-content">
                 <ul class="demo-list-control mdl-list" id="deviceList"></ul>
                 <div class="fixed">
-                    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored" id="addButton">
+                    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored" onclick="onAddButtonClick()">
                         <i class="material-icons">add</i>
                     </button>
                 </div>
@@ -113,7 +113,7 @@
                     <div style="line-height: 28px;">
                         <i style="font-size: 20px;font-style: normal"><b>Sync Protocol</b></i>
                         <br>
-                        <label id="version">Version 0.2.3</label>
+                        <label id="version">Version 0.2.5</label>
                     </div>
                 </div>
 
@@ -189,7 +189,7 @@
             .modal-content {
                 background-color: #fefefe;
                 margin: 5%;
-                padding: 20px;
+                padding: 10px;
                 border: 1px solid #888;
             }
 
@@ -211,28 +211,46 @@
                 left: 50%;
                 color: #FFFFFF;
             }
+
+            .close_button {
+                bottom: 30px;
+                float: right;
+            }
         </style>
 
         <div id="deviceDetail" class="modal">
-            <div class="modal-content">
-                <label id="deviceName"></label>
+            <div class="modal-content" style="text-align: center">
+                <div id="deviceTag"></div>
+                <br>
+
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onclick="onForgetButtonClick()">
+                    <i class="material-icons">delete</i>Forget
+                </button>
+
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onclick="onFindButtonClick()">
+                    <i class="material-icons">find_in_page</i>Find
+                </button>
 
                 <br>
 
-                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="onForgetButtonClick()">
-                    Forget
-                </button>
-                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="onFindButtonClick()">
-                    Find
-                </button>
-
-                <br>
-
-                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="onModalCloseClick()">
+                <button class="mdl-button mdl-js-button mdl-button--raised close_button" onclick="onModalCloseClick()">
                     Close
                 </button>
 
+                <br>
 
+                <label id="battery" style="font-size: 16px;"></label>
+            </div>
+        </div>
+
+        <div id="pairModal" class="modal">
+            <div class="modal-content">
+                <label style="font-size: 16px;">Available devices</label>
+                <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active" id="pairProgress" style="size: 16px; float: right;"></div>
+                <ul class="demo-list-control mdl-list" id="pairModalList"></ul>
+                <button class="mdl-button mdl-js-button mdl-button--raised close_button" onclick="onModalCloseClick()">
+                    Close
+                </button>
             </div>
         </div>
 

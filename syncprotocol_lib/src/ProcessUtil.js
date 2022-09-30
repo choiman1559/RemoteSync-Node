@@ -1,4 +1,5 @@
 const {postRestApi} = require("./PostRequset");
+const {getEventListener, EVENT_TYPE} = require("./Listener");
 
 function responseDeviceInfoToFinder(device) {
     let data = {
@@ -26,7 +27,7 @@ function requestDeviceListWidely() {
 }
 
 function onReceiveDeviceInfo(device) {
-    global.actionListener.onDeviceFound(device)
+    getEventListener().emit(EVENT_TYPE.ON_DEVICE_FOUND, device)
 }
 
 function requestPair(device) {
@@ -45,7 +46,7 @@ function requestPair(device) {
 
 function responsePairAcceptation(device, accept) {
     if(accept) {
-        for (let info in global.pairingProcessList) {
+        for (let info of global.pairingProcessList) {
             if (info === device.toString()) {
                 global.isListeningToPair = false
 
@@ -64,13 +65,13 @@ function responsePairAcceptation(device, accept) {
         "device_id" : global.globalOption.identifierValue,
         "send_device_name" : device.deviceName,
         "send_device_id" : device.deviceId,
-        "pair_accept" : accept
+        "pair_accept" : accept ? "true" : "false"
     }
 
     let isNotRegistered = true;
     let dataToSave = device.deviceName + "|" + device.deviceId
 
-    for (let str in JSON.parse(global.store.get("paired_list"))) {
+    for (let str of JSON.parse(global.store.get("paired_list"))) {
         if (str === dataToSave) {
             isNotRegistered = false;
             break;
@@ -91,7 +92,7 @@ function checkPairResultAndRegister(map, device) {
         let isNotRegistered = true;
         let dataToSave = device.deviceName + "|" + device.deviceId
 
-        for (let str in JSON.parse(global.store.get("paired_list"))) {
+        for (let str of JSON.parse(global.store.get("paired_list"))) {
             if (str === dataToSave) {
                 isNotRegistered = false;
                 break;
@@ -100,9 +101,8 @@ function checkPairResultAndRegister(map, device) {
 
         if(isNotRegistered) {
             let newData = JSON.parse(global.store.get("paired_list"))
-            let foo = [newData]
-            foo.push(dataToSave)
-            global.store.set("paired_list", JSON.stringify(foo));
+            newData.push(dataToSave)
+            global.store.set("paired_list", JSON.stringify(newData));
         }
 
         global.isFindingDeviceToPair = false;
@@ -112,7 +112,7 @@ function checkPairResultAndRegister(map, device) {
         }
     }
 
-    global.actionListener.onDevicePairResult(map)
+    getEventListener().emit(EVENT_TYPE.ON_DEVICE_PAIR_RESULT, map)
 }
 
 function removePairedDevice(device) {
@@ -125,14 +125,13 @@ function removePairedDevice(device) {
 
 function requestRemovePair(device) {
     let data = {
-        "type" : "pair|response_device_list",
+        "type" : "pair|request_remove",
         "device_name" : global.globalOption.deviceName,
         "device_id" : global.globalOption.identifierValue,
         "send_device_name" : device.deviceName,
         "send_device_id" : device.deviceId
     }
 
-    if(global.globalOption.printDebugLog) console.log("sync sent", "request remove: " + JSON.stringify(data))
     postRestApi(data)
 }
 

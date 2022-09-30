@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{@types/electron-devtools-installer, @types/electron-installer-dmg, jquery-1.11.1, jquery.mobile-1.4.5}" />
+    <file url="PROJECT" libraries="{@types/electron-devtools-installer, @types/electron-installer-dmg, iconify-icon, jquery-1.11.1, jquery.mobile-1.4.5}" />
     <includedPredefinedLibrary name="Node.js Core" />
   </component>
 </project>
