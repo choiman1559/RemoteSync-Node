@@ -74,7 +74,9 @@ function loadDeviceList() {
     deviceSelect.innerHTML = '<option value="0">Select Device</option>'
     DeviceList.innerHTML = ""
 
-    const value = JSON.parse(store.get("paired_list"))
+    let value = [];
+    if(store.has("paired_list")) value = JSON.parse(store.get("paired_list"))
+    
     for (let i = 0; i < value.length; i++) {
         const arr = value[i].split("|")
         deviceList.push(new Device(arr[0], arr[1]))

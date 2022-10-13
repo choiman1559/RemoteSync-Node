@@ -143,7 +143,8 @@ function isTargetDevice(map) {
 
 function isPairedDevice(device) {
     let dataToFind = device.toString()
-    const value = JSON.parse(global.store.get("paired_list"))
+    let value = []
+    if(global.store.has("paired_list")) value = JSON.parse(global.store.get("paired_list"))
 
     for (let i = 0;i < value.length; i++) {
         const str = value[i]

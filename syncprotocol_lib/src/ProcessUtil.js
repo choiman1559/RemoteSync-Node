@@ -71,15 +71,17 @@ function responsePairAcceptation(device, accept) {
     let isNotRegistered = true;
     let dataToSave = device.deviceName + "|" + device.deviceId
 
-    for (let str of JSON.parse(global.store.get("paired_list"))) {
-        if (str === dataToSave) {
-            isNotRegistered = false;
-            break;
+    if(global.store.has("paired_list")) {
+        for (let str of JSON.parse(global.store.get("paired_list"))) {
+            if (str === dataToSave) {
+                isNotRegistered = false;
+                break;
+            }
         }
     }
 
     if(isNotRegistered) {
-        let newData = JSON.parse(global.store.get("paired_list"))
+        let newData = global.store.has("paired_list") ? JSON.parse(global.store.get("paired_list")) : []
         newData.push(dataToSave)
         global.store.set("paired_list", JSON.stringify(newData));
     }
