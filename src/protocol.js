@@ -1,7 +1,7 @@
 const Protocol = require("syncprotocol");
 const ConnectionOption = require("syncprotocol/src/ConnectionOption");
 const {PairAction} = require("syncprotocol/src/Actions");
-const {responsePairAcceptation, responseDataRequest, requestPair} = require("syncprotocol/src/ProcessUtil");
+const {responsePairAcceptation, responseDataRequest} = require("syncprotocol/src/ProcessUtil");
 const Device = require("syncprotocol/src/Device");
 const Store = require('electron-store');
 
@@ -10,6 +10,8 @@ const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
 const EventEmitter = require("events");
 const {setConnectionOption} = require("syncprotocol");
+const keySender = require('node-key-sender')
+const ChildProcess = require('child_process')
 const clipboard = require('electron').clipboard;
 
 const store = new Store()
@@ -82,7 +84,7 @@ class Actions extends PairAction {
                     break;
 
                 case "Run command":
-                    require('child_process').exec(actionArgs[0], (error, stdout, stderr) => {
+                    ChildProcess.exec(actionArgs[0], (error, stdout, stderr) => {
                         if (error) {
                             console.log(`error: ${error.message}`);
                             return;
@@ -97,6 +99,10 @@ class Actions extends PairAction {
 
                 case "Share file":
                     //TODO: How to get file from FCM cloud without actual-file path & url ???
+                    break;
+
+                case "PRESENTATION_KEY_PRESSED":
+                    keySender.sendKey(actionArgs[0])
                     break;
             }
         }
