@@ -25,7 +25,6 @@
     "mdl-selectfield": "^1.0.4",
     "node-machine-id": "^1.1.12",
     "node-notifier": "^10.0.1",
-    "node-key-sender": "^1.0.11",
     "open": "^8.4.0",
     "syncprotocol": "file:syncprotocol_lib"
   },
@@ -33,6 +32,9 @@
     "productName": "SyncProtocol",
     "appId": "com.sync.main",
     "asar": true,
+    "asarUnpack": [
+      "./src/lib/key-sender.jar"
+    ],
     "protocols": {
       "name": "syncProtocol",
       "schemes": [

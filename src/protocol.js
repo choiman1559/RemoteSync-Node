@@ -10,7 +10,7 @@ const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
 const EventEmitter = require("events");
 const {setConnectionOption} = require("syncprotocol");
-const keySender = require('node-key-sender')
+const keySender = require('./lib/key-sender')
 const ChildProcess = require('child_process')
 const clipboard = require('electron').clipboard;
 
