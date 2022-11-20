@@ -128,7 +128,7 @@ if (!gotTheLock) {
         createWindow()
 
         ipcMain.on("download_request", (event, info) => {
-            download(BrowserWindow.getFocusedWindow(), info.url)
+            download(mainWindow, info.url)
                 .then(dl => mainWindow.webContents.send("download_complete", dl.getSavePath()));
         })
     })
