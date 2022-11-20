@@ -1,3 +1,7 @@
+const { initializeApp } = require("firebase/app");
+const firebaseConfig = require("./firebase-config.json")
+initializeApp(firebaseConfig);
+
 const {
     init,
     dataSetChangeListener,
@@ -56,6 +60,7 @@ const printDebugLog = getElement("printDebugLog")
 const showAlreadyConnected = getElement("showAlreadyConnected")
 const allowRemovePairRemotely = getElement("allowRemovePairRemotely")
 const receiveFindRequest = getElement("receiveFindRequest")
+const startWhenBoot = getElement("startWhenBoot")
 
 SubmitButton.disabled = true
 
@@ -292,6 +297,7 @@ printDebugLog.checked = getPreferenceValue("printDebugLog", false)
 showAlreadyConnected.checked = getPreferenceValue("showAlreadyConnected", false)
 receiveFindRequest.checked = getPreferenceValue("receiveFindRequest", false)
 allowRemovePairRemotely.checked = getPreferenceValue("allowRemovePairRemotely", true)
+startWhenBoot.checked = getPreferenceValue("startWhenBoot", true)
 pairingKey.value = getPreferenceValue("pairingKey", "test100")
 
 function onValueChanged(id, type) {

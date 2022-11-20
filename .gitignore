@@ -144,5 +144,6 @@ dist
 # Test properties folder
 config
 /src/config
+/src/firebase-config.json
 
 # End of https://www.toptal.com/developers/gitignore/api/node

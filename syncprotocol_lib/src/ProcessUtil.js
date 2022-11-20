@@ -137,6 +137,9 @@ function requestRemovePair(device) {
     postRestApi(data)
 }
 
+/**
+ * @Deprecated
+ */
 function sendFindTaskNotification() {
     let data = {
         "type" : "pair|find",

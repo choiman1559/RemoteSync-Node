@@ -113,7 +113,7 @@
                     <div style="line-height: 28px;">
                         <i style="font-size: 20px;font-style: normal"><b>Sync Protocol</b></i>
                         <br>
-                        <label id="version">Version 0.2.6</label>
+                        <label id="version">Version 0.2.8</label>
                     </div>
                 </div>
 
@@ -169,6 +169,13 @@
                     <input type="checkbox" id="receiveFindRequest" class="mdl-switch__input"
                            onchange="onValueChanged('receiveFindRequest','checked')">
                     <span class="mdl-switch__label">Allow receive find device request</span>
+                </label>
+
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="startWhenBoot"
+                       style="margin-top: 8px">
+                    <input type="checkbox" id="startWhenBoot" class="mdl-switch__input"
+                           onchange="onValueChanged('startWhenBoot','checked')">
+                    <span class="mdl-switch__label">Start program when system is booted</span>
                 </label>
             </div>
         </section>

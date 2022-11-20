@@ -5,6 +5,7 @@ const {responsePairAcceptation, responseDataRequest} = require("syncprotocol/src
 const Device = require("syncprotocol/src/Device");
 const Store = require('electron-store');
 
+const ipcRenderer = require("electron").ipcRenderer;
 const path = require("path");
 const battery = require("battery");
 const {machineIdSync} = require('node-machine-id');
@@ -13,6 +14,7 @@ const {setConnectionOption} = require("syncprotocol");
 const keySender = require('./lib/key-sender')
 const ChildProcess = require('child_process')
 const clipboard = require('electron').clipboard;
+const { getStorage, ref, getDownloadURL } = require("firebase/storage");
 
 const store = new Store()
 
@@ -98,7 +100,23 @@ class Actions extends PairAction {
                     break;
 
                 case "Share file":
-                    //TODO: How to get file from FCM cloud without actual-file path & url ???
+                    new Notification("Download File", {
+                        body: "Download Started: " + actionArgs[0],
+                        icon: path.join(__dirname, '/res/icon.png'),
+                    })
+
+                    const storage = getStorage()
+                    const pathReference = ref(storage, global.globalOption.pairingKey + '/' + actionArgs[0])
+
+                    getDownloadURL(pathReference).then((url) => {
+                        console.log(`Start download URL: ${url}`);
+                        ipcRenderer.send("download_request", {url: url})
+                    }).catch(() => {
+                            new Notification("Download File", {
+                                body: "Download Failed!:" + actionArgs[0],
+                                icon: path.join(__dirname, '/res/icon.png'),
+                            })
+                        });
                     break;
 
                 case "PRESENTATION_KEY_PRESSED":
@@ -165,6 +183,14 @@ function init() {
 function changeOption() {
     setConnectionOption(settingOption())
 }
+
+ipcRenderer.on("download_complete", (event, file) => {
+    console.log(`download URL: ${file}`);
+    new Notification("Download Completed", {
+        body: "Downloaded file saved at: " + file,
+        icon: path.join(__dirname, '/res/icon.png'),
+    })
+});
 
 module.exports = {
     init,

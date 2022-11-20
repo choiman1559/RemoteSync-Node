@@ -7,10 +7,13 @@ const ipcMain = electron.ipcMain
 
 const path = require('path')
 const url = require('url')
+const Store = require('electron-store')
 const {initConfig} = require("syncprotocol/src/Store");
+const {download} = require("electron-dl")
 
 let mainWindow
 let isQuiting
+let store = new Store()
 
 let iconPath = path.join(__dirname, '/res/icon.png')
 
@@ -97,9 +100,17 @@ app.on('activate', function () {
     }
 })
 
-
 ipcMain.on('goBack', async () => {
     mainWindow.webContents.goBack()
+})
+
+function getPreferenceValue(key, defValue) {
+    const value = store.get(key)
+    return value == null ? defValue : value
+}
+
+app.setLoginItemSettings({
+    openAtLogin: getPreferenceValue("startWhenBoot", true)
 })
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -115,5 +126,10 @@ if (!gotTheLock) {
 
     app.on('ready', () => {
         createWindow()
+
+        ipcMain.on("download_request", (event, info) => {
+            download(BrowserWindow.getFocusedWindow(), info.url)
+                .then(dl => mainWindow.webContents.send("download_complete", dl.getSavePath()));
+        })
     })
 }
